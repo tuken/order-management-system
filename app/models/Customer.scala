@@ -4,21 +4,27 @@ package models
   * Created by t.ikawa on 2016/05/26.
   */
 
-import play.api.db.slick.Config.driver.simple_
+import play.api.Play
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.H2Driver.api._
+import slick.driver.JdbcProfile
+//import scala.concurrent.ExecutionContext.Implicits.global
+import slick.lifted.Tag
 
 case class Customer(ID: Long, name: String, email: String, tel: String, address: String, comment: String)
 
 class CustomerTable(tag: Tag) extends Table[Customer](tag, "customers") {
   def ID = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("name", O.NotNull)
-  def email = column[String]("email", O.NotNull)
-  def tel = column[String]("tel", O.NotNull )
-  def address = column[String]("address", O.NotNull)
-  def comment = column[String]("comment", O.NotNull)
+  def name = column[String]("name")
+  def email = column[String]("email")
+  def tel = column[String]("tel")
+  def address = column[String]("address")
+  def comment = column[String]("comment")
   def * = (ID, name, email, tel, address, comment) <> (Customer.tupled, Customer.unapply)
 }
 
 object CustomerDAO {
+  protected val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
   lazy val customerQuery = TableQuery[CustomerTable]
 
   /**
